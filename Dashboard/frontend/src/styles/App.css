@@ -1,0 +1,9 @@
+.App {
+  display: flex;
+  height: 100vh;
+  padding: 100px;
+  box-sizing: border-box;
+  background-color: #ffff;
+  justify-content : center;
+  gap: 100px; /* Adds space between columns */
+}
