@@ -6,13 +6,12 @@ import Header from "./components/Header";
 const App = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   return (
-    <div className="h-screen">
+    <div>
       <Header />
+      <div className="text-center self-stretch p-5 font-sans">
+        <VideoPlayer onStreamingChange={setIsStreaming} />
+      </div>
       <div className="flex h-full p-[100px] box-border bg-white justify-center g-[100px]">
-        <VideoMetrics isStreaming={isStreaming} />
-        <div className="text-center self-stretch p-5 font-sans">
-          <VideoPlayer onStreamingChange={setIsStreaming} />
-        </div>
         <VideoMetrics isStreaming={isStreaming} />
       </div>
     </div>
