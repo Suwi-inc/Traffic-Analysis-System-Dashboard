@@ -42,7 +42,7 @@ const Uploader = ({
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     maxFiles: 1,
     accept: {
-      "video/*": ["*"],
+      "video/*": [],
     },
   });
 
@@ -60,10 +60,12 @@ const Uploader = ({
           })}
         >
           <input {...getInputProps()} />
-          <p>Drop a video file here, or click to select file</p>
+          <p className="text-center">
+            Drop a video file here, or click to select file
+          </p>
         </div>
         {acceptedFileItems.length !== 0 && (
-          <aside>
+          <aside className="text-center">
             <h4 className="font-semibold">Accepted files</h4>
             <ul>{acceptedFileItems}</ul>
           </aside>
@@ -75,7 +77,7 @@ const Uploader = ({
       >
         Upload Video
       </button>
-      {message && <p>{message}</p>}
+      {message && <p className="text-center">{message}</p>}
     </>
   );
 };
