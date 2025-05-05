@@ -72,7 +72,7 @@ const VideoPlayer = ({ onStreamingChange }: Prop) => {
   };
 
   return (
-    <div className="max-w-[1000px] min-w-[900px] mx-auto flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4">
       <Uploader
         selectedFile={selectedFile}
         setSelectedFile={setSelectedFile}
@@ -81,8 +81,10 @@ const VideoPlayer = ({ onStreamingChange }: Prop) => {
       />
 
       <div className="p-2.5 border-solid border-1 border-gray-200 rounded-lg bg-white">
-        <h2 className="text-lg font-semibold">Video Streaming Dashboard</h2>
-        <div className="p-4 bg-white rounded-md shadow-md">
+        <h2 className="text-lg text-center font-semibold">
+          Video Streaming Dashboard
+        </h2>
+        <div className="p-4 bg-white text-center rounded-md shadow-md">
           <button
             className="px-4 py-2 mx-1.5 bg-green-600 text-white border-none rounded-sm cursor-pointer hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
             onClick={isStreaming ? stopStream : startStream}
@@ -98,7 +100,9 @@ const VideoPlayer = ({ onStreamingChange }: Prop) => {
                 style={{ maxWidth: "100%", maxHeight: "500px" }}
               />
             ) : (
-              <p>Stream will appear here when started</p>
+              <p className="text-center">
+                Stream will appear here when started
+              </p>
             )}
           </div>
         </div>

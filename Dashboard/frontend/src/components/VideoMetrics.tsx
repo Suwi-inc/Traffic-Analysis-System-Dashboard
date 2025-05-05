@@ -1,11 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Card from "./Card";
+import BitRateAreaChart from "./AreaChart";
 
 interface Prop {
   isStreaming: boolean;
 }
 
+interface Metrics {
+  fps: number;
+  resolution: string;
+  bitrate: string;
+  latency: string;
+  objects: number;
+  timestamp: string;
+}
+
 const VideoMetrics = ({ isStreaming }: Prop) => {
-  const [metrics, setMetrics] = useState({
+  const ws = useRef<WebSocket>(null);
+  const [metrics, setMetrics] = useState<Metrics>({
     fps: 0,
     resolution: "0x0",
     bitrate: "0 kbps",
@@ -15,66 +27,70 @@ const VideoMetrics = ({ isStreaming }: Prop) => {
   });
 
   useEffect(() => {
-    if (!isStreaming) {
-      setMetrics({
-        fps: 0,
-        resolution: "0x0",
-        bitrate: "0 kbps",
-        latency: "0 ms",
-        objects: 0,
-        timestamp: "--:--:--",
-      });
-      return;
+    if (isStreaming) {
+      startStream();
+    } else {
+      stopStream();
     }
-
-    // Simulate changing metrics while streaming
-    const interval = setInterval(() => {
-      setMetrics({
-        fps: Math.floor(Math.random() * 30) + 15, // 15-45 FPS
-        resolution: `${Math.floor(Math.random() * 500) + 720}x${
-          Math.floor(Math.random() * 300) + 480
-        }`,
-        bitrate: `${Math.floor(Math.random() * 4000) + 1000} kbps`,
-        latency: `${Math.floor(Math.random() * 100) + 50} ms`,
-        objects: Math.floor(Math.random() * 10),
-        timestamp: new Date().toLocaleTimeString(),
-      });
-    }, 2000); // Update every 2 seconds
-
-    return () => clearInterval(interval);
   }, [isStreaming]);
 
+  const WS_BASE_URL = import.meta.env.VITE_APP_WS_BASE_URL;
+
+  useEffect(() => {
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
+
+  const startStream = () => {
+    ws.current = new WebSocket(`${WS_BASE_URL}/metrics`);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+      ws.current?.send("stream_metrics");
+    };
+
+    ws.current.onmessage = (event) => {
+      try {
+        const data: Metrics = JSON.parse(event.data);
+        setMetrics(data);
+      } catch (error) {
+        console.error("Error processing frame:", error);
+      }
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+  };
+
+  const stopStream = () => {
+    if (!isStreaming && ws.current) {
+      ws.current.close();
+    }
+  };
+
   return (
-    <div className="bg-gray-300 text-black p-4 rounded w-80 h-fit ml-2.5 mt-12">
-      <h3 className="mt-0 mb-2.5 pb-2.5 border-b-1 border-b-black border-solid text-center">
+    <div className="w-full mx-auto flex flex-col items-center p-8 gap-4">
+      <h3 className="mb-2.5 pb-2.5 border-b-1 border-b-black border-solid text-center text-2xl font-semibold">
         Video Metrics
       </h3>
-      <div className="grid grid-cols-[1fr] gap-2.5">
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-black">FPS:</span>
-          <span className="font-mono text-black">{metrics.fps}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-black">Resolution:</span>
-          <span className="font-mono text-black">{metrics.resolution}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-black">Bitrate:</span>
-          <span className="font-mono text-black">{metrics.bitrate}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-black">Latency:</span>
-          <span className="font-mono text-black">{metrics.latency}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-black">Objects Detected:</span>
-          <span className="font-mono text-black">{metrics.objects}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-black">Last Update:</span>
-          <span className="font-mono text-black">{metrics.timestamp}</span>
-        </div>
+      <div className="flex flex-wrap gap-8 h-fit justify-center">
+        <Card title="FPS" item={`${metrics.fps}`} />
+        <Card title="Resolution" item={`${metrics.resolution}`} />
+        <Card title="Latency" item={`${metrics.latency}`} />
+        <Card title="Objects Detected" item={`${metrics.objects}`} />
       </div>
+      <BitRateAreaChart
+        timestamp={`${metrics.timestamp}`}
+        bitrate={`${metrics.bitrate.split(" kbps")[0]}`}
+      />
     </div>
   );
 };
