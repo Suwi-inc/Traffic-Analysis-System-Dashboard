@@ -1,9 +1,7 @@
 import asyncio
-import cv2
 from fastapi import FastAPI, UploadFile, File, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import json
-import base64
 import tempfile
 import os
 from random import Random
@@ -31,8 +29,6 @@ connected_clients = set()
 @app.post("/upload")
 async def upload_video(file: UploadFile = File(...)):
     global current_video_path
-
-    # Create a temporary file
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_file:
         contents = await file.read()
         tmp_file.write(contents)
