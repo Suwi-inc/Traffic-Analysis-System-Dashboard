@@ -38,3 +38,23 @@ def vehicle_type_distribution(vehicle_labels_per_lane):
         distribution[lane_id] = dict(count)
 
     return distribution
+
+
+def vehicle_counts_over_time(vehicle_timestamps, interval="minute"):
+    """
+    Calculate vehicle counts per minute or per hour.
+
+    Args:
+        vehicle_timestamps (dict): {lane_id: [datetime1, datetime2, ...]}
+        interval (str): 'minute' or 'hour'
+
+    Returns:
+        dict: {lane_id: {'HH:MM': count}} or {'YYYY-MM-DD HH': count}
+    """
+    format_str = "%Y-%m-%d %H:%M" if interval == "minute" else "%Y-%m-%d %H"
+    results = {}
+    for lane_id, timestamps in vehicle_timestamps.items():
+        formatted_times = [dt.strftime(format_str) for dt in timestamps]
+        counts = dict(Counter(formatted_times))
+        results[lane_id] = counts
+    return results

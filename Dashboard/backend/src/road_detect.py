@@ -123,27 +123,3 @@ def detect(image, h_threshold=80, distance_threshold=50):
     res_left = np.array(filtered_lines_y, dtype=np.int32)
 
     return res_right, res_left
-
-
-def main():
-    # image = cv2.imread("lane1.jpg")
-
-    cap = cv2.VideoCapture("../assets/cars2.mp4")
-    if not cap.isOpened():
-        print("Error: Could not open video.")
-        return
-    ret, first_frame = cap.read()
-    if not ret:
-        print("Error: Could not read the first frame.")
-        return
-    res_right, res_left = detect(first_frame)
-
-    imageres = first_frame.copy()
-    imageres = get_overlay(res_right, res_left, imageres)
-    cv2.imshow("first", first_frame)
-    cv2.imshow("test", imageres)
-    cv2.waitKey(0)
-
-
-if __name__ == "__main__":
-    main()
