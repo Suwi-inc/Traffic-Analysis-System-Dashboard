@@ -101,6 +101,7 @@ const Uploader = () => {
             id="vehicles"
             type="checkbox"
             name="vehicles"
+            defaultChecked
             onChange={(e) =>
               setFormOptions({
                 ...formOptions,
@@ -115,6 +116,7 @@ const Uploader = () => {
             id="counter"
             type="checkbox"
             name="counter"
+            defaultChecked
             onChange={(e) =>
               setFormOptions({
                 ...formOptions,
