@@ -1,5 +1,6 @@
 import asyncio
-from fastapi import FastAPI, UploadFile, File, WebSocket
+from typing import Annotated
+from fastapi import FastAPI, Form, UploadFile, File, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import tempfile
@@ -15,7 +16,7 @@ app = FastAPI()
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,16 +24,24 @@ app.add_middleware(
 
 # Global variable to store video path
 current_video_path = None
+current_show = {}
 connected_clients = set()
 
 
 @app.post("/upload")
-async def upload_video(file: UploadFile = File(...)):
+async def upload_video(
+    counter: Annotated[str, Form()],
+    show_lanes: Annotated[str, Form()],
+    vehicles: Annotated[str, Form()],
+    file: UploadFile = File(...),
+):
     global current_video_path
+    global current_show
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_file:
         contents = await file.read()
         tmp_file.write(contents)
         current_video_path = tmp_file.name
+    current_show = {"vehicles": vehicles, "counter": counter, "show_lanes": show_lanes}
 
     return {"filename": file.filename, "temp_path": current_video_path}
 
@@ -45,7 +54,13 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_text()
             if data == "start_stream":
-                await process_and_stream_analysis(websocket, current_video_path)
+                await process_and_stream_analysis(
+                    websocket,
+                    current_video_path,
+                    current_show["vehicles"] == "1",
+                    current_show["counter"] == "1",
+                    current_show["show_lanes"] == "1",
+                )
     except Exception as e:
         print(f"WebSocket error: {e}")
     finally:
