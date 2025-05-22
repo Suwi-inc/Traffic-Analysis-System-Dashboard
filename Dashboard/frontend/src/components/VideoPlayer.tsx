@@ -1,16 +1,13 @@
-import { useRef, useState, useEffect } from "react";
-import Uploader from "./Uploader";
+import { useRef, useEffect } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { isStreamingAtom, messageAtom, isUploadedAtom } from "../atoms";
 
-interface Prop {
-  onStreamingChange: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const VideoPlayer = ({ onStreamingChange }: Prop) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [message, setMessage] = useState("");
-  const [isStreaming, setIsStreaming] = useState(false);
+const VideoPlayer = () => {
+  const [isStreaming, setIsStreaming] = useAtom(isStreamingAtom);
+  const isUploaded = useAtomValue(isUploadedAtom);
+  const setMessage = useSetAtom(messageAtom);
   const videoRef = useRef<HTMLImageElement | null>(null);
-  const ws = useRef<WebSocket>(null);
+  const ws = useRef<WebSocket | null>(null);
 
   const WS_BASE_URL = import.meta.env.VITE_APP_WS_BASE_URL;
 
@@ -23,7 +20,7 @@ const VideoPlayer = ({ onStreamingChange }: Prop) => {
   }, []);
 
   const startStream = () => {
-    if (!selectedFile) {
+    if (!isUploaded) {
       setMessage("Please upload a video first!");
       return;
     }
@@ -59,7 +56,7 @@ const VideoPlayer = ({ onStreamingChange }: Prop) => {
       console.log("WebSocket disconnected");
       setIsStreaming(false);
     };
-    if (onStreamingChange) onStreamingChange(true);
+    if (setIsStreaming) setIsStreaming(true);
   };
 
   const stopStream = () => {
@@ -68,43 +65,32 @@ const VideoPlayer = ({ onStreamingChange }: Prop) => {
     }
     setIsStreaming(false);
     setMessage("Stream stopped");
-    if (onStreamingChange) onStreamingChange(false);
+    if (setIsStreaming) setIsStreaming(false);
   };
 
   return (
-    <div className="w-full flex flex-col gap-4">
-      <Uploader
-        selectedFile={selectedFile}
-        setSelectedFile={setSelectedFile}
-        message={message}
-        setMessage={setMessage}
-      />
-
-      <div className="p-2.5 border-solid border-1 border-gray-200 rounded-lg bg-white">
-        <h2 className="text-lg text-center font-semibold">
-          Video Streaming Dashboard
-        </h2>
-        <div className="p-4 bg-white text-center rounded-md shadow-md">
-          <button
-            className="px-4 py-2 mx-1.5 bg-green-600 text-white border-none rounded-sm cursor-pointer hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            onClick={isStreaming ? stopStream : startStream}
-            disabled={!selectedFile}
-          >
-            {isStreaming ? "Stop Stream" : "Start Stream"}
-          </button>
-          <div className="mt-3.5 min-h-80 flex items-center justify-center bg-white rounded-md">
-            {isStreaming ? (
-              <img
-                ref={videoRef}
-                alt="Video Stream"
-                style={{ maxWidth: "100%", maxHeight: "500px" }}
-              />
-            ) : (
-              <p className="text-center">
-                Stream will appear here when started
-              </p>
-            )}
-          </div>
+    <div className="p-2.5 border-solid border-1 border-gray-200 rounded-lg bg-white">
+      <h2 className="text-lg text-center font-semibold">
+        Video Streaming Dashboard
+      </h2>
+      <div className="p-4 bg-white text-center rounded-md shadow-md">
+        <button
+          className="px-4 py-2 mx-1.5 bg-green-600 text-white border-none rounded-sm cursor-pointer hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          onClick={isStreaming ? stopStream : startStream}
+          disabled={!isUploaded}
+        >
+          {isStreaming ? "Stop Stream" : "Start Stream"}
+        </button>
+        <div className="mt-3.5 min-h-80 flex items-center justify-center bg-white rounded-md">
+          {isStreaming ? (
+            <img
+              ref={videoRef}
+              alt="Video Stream"
+              style={{ maxWidth: "100%", maxHeight: "500px" }}
+            />
+          ) : (
+            <p className="text-center">Stream will appear here when started</p>
+          )}
         </div>
       </div>
     </div>

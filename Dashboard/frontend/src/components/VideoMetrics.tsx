@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import Card from "./Card";
 import BitRateAreaChart from "./AreaChart";
-
-interface Prop {
-  isStreaming: boolean;
-}
+import { useAtomValue } from "jotai";
+import { isStreamingAtom } from "../atoms";
 
 interface Metrics {
   fps: number;
@@ -15,8 +13,12 @@ interface Metrics {
   timestamp: string;
 }
 
-const VideoMetrics = ({ isStreaming }: Prop) => {
-  const ws = useRef<WebSocket>(null);
+const VideoMetrics = () => {
+  const isStreaming = useAtomValue(isStreamingAtom);
+
+  const WS_BASE_URL = import.meta.env.VITE_APP_WS_BASE_URL;
+
+  const ws = useRef<WebSocket | null>(null);
   const [metrics, setMetrics] = useState<Metrics>({
     fps: 0,
     resolution: "0x0",
@@ -25,24 +27,6 @@ const VideoMetrics = ({ isStreaming }: Prop) => {
     objects: 0,
     timestamp: new Date().toLocaleTimeString(),
   });
-
-  useEffect(() => {
-    if (isStreaming) {
-      startStream();
-    } else {
-      stopStream();
-    }
-  }, [isStreaming]);
-
-  const WS_BASE_URL = import.meta.env.VITE_APP_WS_BASE_URL;
-
-  useEffect(() => {
-    return () => {
-      if (ws.current) {
-        ws.current.close();
-      }
-    };
-  }, []);
 
   const startStream = () => {
     ws.current = new WebSocket(`${WS_BASE_URL}/metrics`);
@@ -75,6 +59,22 @@ const VideoMetrics = ({ isStreaming }: Prop) => {
       ws.current.close();
     }
   };
+
+  useEffect(() => {
+    if (isStreaming) {
+      startStream();
+    } else {
+      stopStream();
+    }
+  }, [isStreaming]);
+
+  useEffect(() => {
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
 
   return (
     <div className="w-full mx-auto flex flex-col items-center p-8 gap-4">
