@@ -19,8 +19,8 @@ const Uploader = () => {
   const [message, setMessage] = useAtom(messageAtom);
   const setIsUploaded = useSetAtom(isUploadedAtom);
   const [formOptions, setFormOptions] = useState<FormOptions>({
-    vehicles: 0,
-    counter: 0,
+    vehicles: 1,
+    counter: 1,
     show_lanes: 0,
   });
 
