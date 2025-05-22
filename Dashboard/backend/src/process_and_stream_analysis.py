@@ -1,6 +1,6 @@
 from datetime import datetime
 import os
-from time import time
+import time
 import cv2
 import json
 import base64
@@ -169,6 +169,6 @@ async def process_and_stream_analysis(
         }
 
         await stream_frame(websocket, payload)
-        await asyncio.sleep(0.033)
+        await asyncio.sleep(0.017)
 
     cap.release()
