@@ -1,0 +1,2 @@
+test pytest
+test and code coverage report  coverage run --source=../src -m pytest  && coverage report -m
