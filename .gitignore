@@ -1,3 +1,5 @@
 Dashboard/frontend/.env.development
 Dashboard/frontend/.env.production
 Dashboard/frontend/node_modules/
+Dashboard/backend/backend
+Dashboard/backend/tests/models
