@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+from time import time
 import cv2
 import json
 import base64
@@ -128,6 +129,7 @@ async def process_and_stream_analysis(
         if not ret:
             break
         total_frames += 1
+        start_time = time.perf_counter()
         detections, labels = detector.detect(frame)
         tracking_data = tracker.track(detections, frame, labels)
 
@@ -154,6 +156,8 @@ async def process_and_stream_analysis(
             vehicle_timestamps, interval="minute"
         )
         counts_per_hour = vehicle_counts_over_time(vehicle_timestamps, interval="hour")
+        end_time = time.perf_counter()
+        fps = 1 / (end_time - start_time)
 
         payload = {
             "frame": frame,
@@ -161,6 +165,7 @@ async def process_and_stream_analysis(
             "occupancy": occupancy,
             "counts_per_minute": counts_per_minute,
             "counts_per_hour": counts_per_hour,
+            "fps": fps,
         }
 
         await stream_frame(websocket, payload)
