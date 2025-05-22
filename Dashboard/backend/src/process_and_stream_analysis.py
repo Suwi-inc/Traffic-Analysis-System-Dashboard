@@ -92,10 +92,11 @@ def draw_lane_counters(frame, lanes, vehicle_counts):
     return frame
 
 
-async def stream_frame(websocket, frame):
-    _, buffer = cv2.imencode(".jpg", frame)
+async def stream_frame(websocket, payload):
+    _, buffer = cv2.imencode(".jpg", payload["frame"])
     jpg_as_text = base64.b64encode(buffer).decode("utf-8")
-    await websocket.send_text(json.dumps({"frame": jpg_as_text}))
+    payload["frame"] = jpg_as_text
+    await websocket.send_text(json.dumps(payload))
 
 
 async def process_and_stream_analysis(
@@ -154,7 +155,15 @@ async def process_and_stream_analysis(
         )
         counts_per_hour = vehicle_counts_over_time(vehicle_timestamps, interval="hour")
 
-        await stream_frame(websocket, frame)
+        payload = {
+            "frame": frame,
+            "type_distribution": type_distribution,
+            "occupancy": occupancy,
+            "counts_per_minute": counts_per_minute,
+            "counts_per_hour": counts_per_hour,
+        }
+
+        await stream_frame(websocket, payload)
         await asyncio.sleep(0.033)
 
     cap.release()
