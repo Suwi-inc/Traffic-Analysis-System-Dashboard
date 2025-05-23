@@ -13,13 +13,13 @@ const Occupancy = ({ lane1, lane2 }: Props) => {
         <div>
           <div className="font-semibold text-black text-xl">Lane 1:</div>
           <div className="font-mono text-black self-end text-3xl font-semibold">
-            {lane1}
+            {lane1 === "undefined" ? 0 : lane1}
           </div>
         </div>
         <div>
           <div className="font-semibold text-black text-xl">Lane 2:</div>
           <div className="font-mono text-black self-end text-3xl font-semibold">
-            {lane2}
+            {lane2 === "undefined" ? 0 : lane2}
           </div>
         </div>
       </div>
