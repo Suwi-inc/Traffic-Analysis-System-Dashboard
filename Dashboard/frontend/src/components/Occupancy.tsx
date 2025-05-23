@@ -6,8 +6,10 @@ interface Props {
 const Occupancy = ({ lane1, lane2 }: Props) => {
   return (
     <div className="rounded-lg shadow-lg p-2 flex flex-col min-w-80 border border-gray-200">
-      <div className="font-semibold text-black text-3xl">Occupancy:</div>
-      <div className="flex justify-between">
+      <div className="font-semibold text-black text-2xl">
+        Lane Occupancy Rate:
+      </div>
+      <div className="flex justify-between gap-2">
         <div>
           <div className="font-semibold text-black text-xl">Lane 1:</div>
           <div className="font-mono text-black self-end text-3xl font-semibold">

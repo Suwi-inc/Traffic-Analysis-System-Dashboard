@@ -1,4 +1,4 @@
-import Fps from "./Card";
+import Fps from "./Fps";
 import { useAtomValue } from "jotai";
 import { resultAtom } from "../atoms";
 import Occupancy from "./Occupancy";
