@@ -1,11 +1,17 @@
-import { useRef, useEffect } from "react";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { isStreamingAtom, messageAtom, isUploadedAtom } from "../atoms";
+import { useRef, useEffect, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+  messageAtom,
+  isUploadedAtom,
+  resultAtom,
+} from "../atoms";
+import { Result } from "../models";
 
 const VideoPlayer = () => {
-  const [isStreaming, setIsStreaming] = useAtom(isStreamingAtom);
+  const [isStreaming, setIsStreaming] = useState(false);
   const isUploaded = useAtomValue(isUploadedAtom);
   const setMessage = useSetAtom(messageAtom);
+  const setResult = useSetAtom(resultAtom);
   const videoRef = useRef<HTMLImageElement | null>(null);
   const ws = useRef<WebSocket | null>(null);
 
@@ -37,7 +43,8 @@ const VideoPlayer = () => {
 
     ws.current.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data);
+        const data: Result = JSON.parse(event.data);
+        setResult(data);
         if (data.frame && videoRef.current) {
           videoRef.current.src = `data:image/jpeg;base64,${data.frame}`;
         }

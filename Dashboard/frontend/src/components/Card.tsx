@@ -1,12 +1,11 @@
 interface Props {
-  title: string;
-  item: string;
+  value: string;
 }
 
-const Card = ({ title, item }: Props) => {
+const Fps = ({ value: item }: Props) => {
   return (
     <div className="rounded-lg shadow-lg p-2 flex flex-col min-w-80 border border-gray-200">
-      <div className="font-semibold text-black text-3xl">{title}:</div>
+      <div className="font-semibold text-black text-3xl">FPS:</div>
       <div className="font-mono text-black self-end text-5xl font-semibold">
         {item}
       </div>
@@ -14,4 +13,4 @@ const Card = ({ title, item }: Props) => {
   );
 };
 
-export default Card;
+export default Fps;
