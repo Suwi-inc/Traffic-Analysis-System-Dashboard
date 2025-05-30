@@ -84,9 +84,9 @@ def test_draw_lane_counters():
 @pytest.mark.asyncio
 async def test_stream_frame():
     frame = np.zeros((100, 100, 3), dtype=np.uint8)
-
+    payload = {"frame": frame}
     mock_websocket = mock.AsyncMock()
-    await stream_frame(mock_websocket, frame)
+    await stream_frame(mock_websocket, payload)
     assert mock_websocket.send_text.called
     args = mock_websocket.send_text.call_args[0]
     assert "frame" in json.loads(args[0])
