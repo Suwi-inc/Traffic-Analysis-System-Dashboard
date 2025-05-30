@@ -2,14 +2,12 @@ from ultralytics import YOLO
 
 
 class YoloDetector:
-    def __init__(self, model_path, confidence):
-        self.model = YOLO(model_path).to("cuda")  # Move model to GPU
+    def __init__(self, model_path, confidence, device="cuda"):
+        self.model = YOLO(model_path).to(device)  # Move model to GPU
         self.confidence = confidence
 
-    def detect(self, image):
-        results = self.model.predict(
-            image, conf=self.confidence, device="cuda"
-        )  # Use GPU for prediction otherwise use CPU
+    def detect(self, image, use="cuda"):
+        results = self.model.predict(image, conf=self.confidence, device=use)
         result = results[0]
         detections = self.make_detections(result)
         return detections
