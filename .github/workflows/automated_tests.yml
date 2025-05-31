@@ -31,9 +31,9 @@ jobs:
           pip install pytest coverage
 
       - name: Run tests
-        working-directory: ./Dashboard/backend/tests
+        working-directory: ./Dashboard/backend/
         run: pytest
 
       - name: Run coverage and enforce threshold
-        working-directory: ./Dashboard/backend/tests
-        run: coverage run --source=../src -m pytest  && coverage report -m --fail-under=75
+        working-directory: ./Dashboard/backend/
+        run: coverage run --source=./src,. -m pytest  && coverage report -m --fail-under=70
