@@ -4,3 +4,5 @@ Dashboard/frontend/node_modules/
 Dashboard/backend/backend
 Dashboard/backend/tests/models
 *pyc
+*env
+*coverage
