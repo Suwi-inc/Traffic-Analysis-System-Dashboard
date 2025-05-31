@@ -2,7 +2,6 @@ from datetime import datetime
 import pytest
 import numpy as np
 import json
-import cv2
 from unittest import mock
 from collections import defaultdict
 from ..src.process_and_stream_analysis import (
