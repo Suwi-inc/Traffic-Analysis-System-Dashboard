@@ -1,13 +1,17 @@
-import asyncio
 from typing import Annotated
-from fastapi import FastAPI, Form, UploadFile, File, WebSocket
+from fastapi import (
+    FastAPI,
+    Form,
+    UploadFile,
+    File,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
 from fastapi.middleware.cors import CORSMiddleware
-import json
 import tempfile
 import os
-from random import Random
-from datetime import datetime
-from time import time
+from fastapi.responses import JSONResponse
 from src.process_and_stream_analysis import process_and_stream_analysis
 
 
@@ -37,6 +41,11 @@ async def upload_video(
 ):
     global current_video_path
     global current_show
+    if not file.content_type.startswith("video/"):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"detail": "Invalid file type. Only video files are allowed."},
+        )
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_file:
         contents = await file.read()
         tmp_file.write(contents)
@@ -61,48 +70,12 @@ async def websocket_endpoint(websocket: WebSocket):
                     current_show["counter"] == "1",
                     current_show["show_lanes"] == "1",
                 )
+    except WebSocketDisconnect:
+        print("WebSocket disconnected.")
     except Exception as e:
         print(f"WebSocket error: {e}")
     finally:
         connected_clients.discard(websocket)
-
-
-@app.websocket("/metrics")
-async def metrics_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    connected_clients.add(websocket)
-    try:
-        while True:
-            data = await websocket.receive_text()
-            if data == "stream_metrics":
-                await send_metrics(websocket)
-    except Exception as e:
-        print(f"WebSocket error: {e}")
-    finally:
-        connected_clients.discard(websocket)
-
-
-async def send_metrics(websocket: WebSocket):
-    while True:
-        rand = Random()
-        fps = rand.randint(15, 45)
-        resolution = f"{rand.randint(640, 1920)}x{rand.randint(480, 1080)}"
-        bitrate = f"{rand.randint(999, 4999)} kbps"
-        latency = f"{rand.randint(0, 200)} ms"
-        objects = rand.randint(0, 9)
-        timestamp = f"{datetime.fromtimestamp(time()).time().strftime('%H:%M:%S')}"
-        message = json.dumps(
-            {
-                "fps": fps,
-                "resolution": resolution,
-                "bitrate": bitrate,
-                "latency": latency,
-                "objects": objects,
-                "timestamp": timestamp,
-            }
-        )
-        await websocket.send_text(message)
-        await asyncio.sleep(0.5)
 
 
 @app.on_event("shutdown")

@@ -7,6 +7,8 @@ import base64
 import asyncio
 import numpy as np
 from collections import defaultdict
+from .db.db_model import SessionLocal
+from .db.store_metrics import store_metrics_data
 
 from .detect import YoloDetector
 from .track import Tracker
@@ -123,6 +125,7 @@ async def process_and_stream_analysis(
     vehicle_timestamps = {lane_id: [] for lane_id in lane_polygons.keys()}
     lane_occupancy_frames = defaultdict(int)
     total_frames = 0
+    final_metrics = None
 
     while True:
         ret, frame = cap.read()
@@ -159,7 +162,7 @@ async def process_and_stream_analysis(
         end_time = time.perf_counter()
         fps = 1 / (end_time - start_time)
 
-        payload = {
+        final_metrics = payload = {
             "frame": frame,
             "type_distribution": type_distribution,
             "occupancy": occupancy,
@@ -171,4 +174,13 @@ async def process_and_stream_analysis(
         await stream_frame(websocket, payload)
         await asyncio.sleep(0.017)
 
+    if final_metrics:
+        with SessionLocal() as db:
+            store_metrics_data(
+                db,
+                video_name=os.path.basename(video_path),
+                type_distribution=final_metrics["type_distribution"],
+                occupancy=final_metrics["occupancy"],
+            )
+    await websocket.close()
     cap.release()
