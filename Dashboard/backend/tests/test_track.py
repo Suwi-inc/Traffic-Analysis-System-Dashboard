@@ -1,4 +1,4 @@
-import cv2
+import numpy as np
 from ..src.track import Tracker
 
 
@@ -9,7 +9,7 @@ def test_tracker_initialization():
 
 def test_tracker_tracking_empty_input():
     tracker = Tracker()
-    frame = cv2.imread("./assets/test_image.jpg")
+    frame = np.zeros((200, 200, 3), dtype=np.uint8)
     detections = []
     labels = []
     result = tracker.track(detections, frame, labels)

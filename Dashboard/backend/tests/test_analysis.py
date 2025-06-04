@@ -2,7 +2,6 @@ from datetime import datetime
 import pytest
 import numpy as np
 import json
-import cv2
 from unittest import mock
 from collections import defaultdict
 from ..src.process_and_stream_analysis import (
@@ -29,7 +28,6 @@ def mock_lanes_file(tmp_path):
 
 
 def test_load_lane_polygons(mock_lanes_file):
-    from ..src.process_and_stream_analysis import PREDEFINED_LANES
 
     lanes, lane_polygons = load_lane_polygons(mock_lanes_file)
     assert len(lanes) == 2
