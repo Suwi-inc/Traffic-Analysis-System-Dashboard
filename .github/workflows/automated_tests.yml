@@ -13,6 +13,8 @@ jobs:
     strategy:
       matrix:
         python-version: [ 3.11]
+    env:
+      DATABASE_URL: ${{ secrets.TEST_DB }}
 
     steps:
       - name: Checkout code
