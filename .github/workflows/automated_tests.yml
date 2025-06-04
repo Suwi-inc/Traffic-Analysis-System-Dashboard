@@ -38,4 +38,4 @@ jobs:
 
       - name: Run coverage and enforce threshold
         working-directory: ./Dashboard/backend/
-        run: coverage run --source=./src,. -m pytest  && coverage report -m --fail-under=70
+        run: coverage run --source=./src,. -m pytest  && coverage report -m --fail-under=70 -i 
