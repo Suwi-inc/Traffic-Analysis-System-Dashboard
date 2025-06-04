@@ -12,12 +12,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import tempfile
 import os
 from fastapi.responses import JSONResponse
+from src.db.db_model import SessionLocal
+from src.db.store_metrics import retrieve_metrics_data
 from src.process_and_stream_analysis import process_and_stream_analysis
 
 
 app = FastAPI()
 
-# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,7 +27,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global variable to store video path
 current_video_path = None
 current_show = {}
 connected_clients = set()
@@ -55,6 +55,13 @@ async def upload_video(
     current_show = {"vehicles": vehicles, "counter": counter, "show_lanes": show_lanes}
 
     return {"filename": file.filename, "temp_path": current_video_path}
+
+
+@app.get("/metrics")
+async def get_metrics():
+    with SessionLocal() as db:
+        metrics = retrieve_metrics_data(db)
+    return {"metrics": metrics}
 
 
 @app.websocket("/ws")

@@ -11,7 +11,7 @@ client = TestClient(app)
 
 def test_upload_video_success(tmp_path):
     video_path = tmp_path / "test_video.mp4"
-    video_path.write_bytes(b"fake video content")
+    video_path.write_bytes(b"test video content")
 
     with open(video_path, "rb") as f:
         response = client.post(
