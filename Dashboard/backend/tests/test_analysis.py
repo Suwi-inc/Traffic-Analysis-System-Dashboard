@@ -28,7 +28,6 @@ def mock_lanes_file(tmp_path):
 
 
 def test_load_lane_polygons(mock_lanes_file):
-    from ..src.process_and_stream_analysis import PREDEFINED_LANES
 
     lanes, lane_polygons = load_lane_polygons(mock_lanes_file)
     assert len(lanes) == 2

@@ -46,7 +46,9 @@ async def upload_video(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"detail": "Invalid file type. Only video files are allowed."},
         )
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_file:
+    with tempfile.NamedTemporaryFile(
+        delete=False, suffix=".mp4", prefix=file.filename
+    ) as tmp_file:
         contents = await file.read()
         tmp_file.write(contents)
         current_video_path = tmp_file.name
