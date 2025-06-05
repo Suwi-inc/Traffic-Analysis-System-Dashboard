@@ -1,32 +1,49 @@
 export interface Result {
   frame: string;
   type_distribution: {
-    lane_1: {
-      [key: string]: number;
-    };
-    lane_2: {
+    [key: string]: {
       [key: string]: number;
     };
   };
   occupancy: {
-    lane_1: number;
-    lane_2: number;
+    [key: string]: number;
   };
   counts_per_minute: {
-    lane_1: {
-      [key: string]: number;
-    };
-    lane_2: {
+    [key: string]: {
       [key: string]: number;
     };
   };
   counts_per_hour: {
-    lane_1: {
-      [key: string]: number;
-    };
-    lane_2: {
+    [key: string]: {
       [key: string]: number;
     };
   };
   fps: number;
+}
+
+export interface HistoryResult {
+  metrics: [
+    {
+      metric_id: number;
+      video_name: string;
+      time: string;
+      lane_occupancy: [
+        {
+          lane_name: string;
+          occupancy_rate: number;
+        }
+      ];
+      vehicle_distribution: [
+        {
+          lane_name: string;
+          car: number;
+          truck: number;
+          motorcycle: number;
+          bus: number;
+          other: number;
+        }
+      ];
+      vehicle_counts: [];
+    }
+  ];
 }

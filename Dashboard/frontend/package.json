@@ -12,10 +12,12 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
     "axios": "^1.8.4",
+    "dayjs": "^1.11.13",
     "jotai": "^2.12.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
+    "react-scan": "^0.3.4",
     "recharts": "^2.15.3",
     "tailwindcss": "^4.1.4"
   },

@@ -2,6 +2,7 @@ import VideoMetrics from "./components/VideoMetrics";
 import VideoPlayer from "./components/VideoPlayer";
 import Header from "./components/Header";
 import Uploader from "./components/Uploader";
+import History from "./components/History";
 
 const App = () => {
   return (
@@ -11,8 +12,9 @@ const App = () => {
         <Uploader />
         <VideoPlayer />
       </div>
-      <div className="flex min-w-[600px] justify-center">
+      <div className="flex w-full justify-between">
         <VideoMetrics />
+        <History />
       </div>
     </>
   );

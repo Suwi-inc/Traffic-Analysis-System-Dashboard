@@ -6,7 +6,7 @@ const Fps = ({ value: item }: Props) => {
   return (
     <div className="rounded-lg shadow-lg p-2 flex flex-col min-w-80 border border-gray-200">
       <div className="font-semibold text-black text-2xl">FPS:</div>
-      <div className="font-mono text-black self-end text-4xl font-semibold">
+      <div className="font-mono text-black self-end text-3xl font-semibold">
         {item}
       </div>
     </div>

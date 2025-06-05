@@ -1,27 +1,24 @@
 interface Props {
-  lane1: string;
-  lane2: string;
+  occupancy: {
+    [key: string]: number;
+  };
 }
 
-const Occupancy = ({ lane1, lane2 }: Props) => {
+const Occupancy = ({ occupancy }: Props) => {
   return (
     <div className="rounded-lg shadow-lg p-2 flex flex-col min-w-80 border border-gray-200">
       <div className="font-semibold text-black text-2xl">
         Lane Occupancy Rate:
       </div>
       <div className="flex justify-between gap-2">
-        <div>
-          <div className="font-semibold text-black text-xl">Lane 1:</div>
-          <div className="font-mono text-black self-end text-3xl font-semibold">
-            {lane1 === "undefined" ? 0 : lane1}
+        {Object.entries(occupancy).map((x) => (
+          <div key={x[0]}>
+            <div className="font-semibold text-black text-xl">{x[0]}:</div>
+            <div className="font-mono text-black self-end text-2xl font-semibold">
+              {x[1]}
+            </div>
           </div>
-        </div>
-        <div>
-          <div className="font-semibold text-black text-xl">Lane 2:</div>
-          <div className="font-mono text-black self-end text-3xl font-semibold">
-            {lane2 === "undefined" ? 0 : lane2}
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

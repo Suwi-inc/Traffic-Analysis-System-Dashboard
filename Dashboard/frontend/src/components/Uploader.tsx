@@ -41,7 +41,7 @@ const Uploader = () => {
     formData.append("show_lanes", `${formOptions.show_lanes}`);
 
     try {
-      setMessage("Uploading...");
+      setMessage("Linking...");
       const resp = await axios.post<UploadResponse>(
         `${API_BASE_URL}/upload`,
         formData,
@@ -54,11 +54,11 @@ const Uploader = () => {
       if (resp.status === 200) {
         setIsUploaded(true);
       } else {
-        throw new Error("Error uploading video");
+        throw new Error("Error linking video");
       }
-      setMessage("Video uploaded successfully!");
+      setMessage("Video linked successfully!");
     } catch (error) {
-      setMessage("Error uploading video");
+      setMessage("Error linking video");
       console.error("Error:", error);
     }
   };
@@ -142,7 +142,7 @@ const Uploader = () => {
         </div>
       </fieldset>
       <button className="px-4 py-2 mx-1.5 w-sm self-center font-semibold bg-green-600 text-white border-none rounded-sm cursor-pointer hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed">
-        Upload Video
+        Link Video Stream
       </button>
       {message && <p className="text-center">{message}</p>}
     </form>
