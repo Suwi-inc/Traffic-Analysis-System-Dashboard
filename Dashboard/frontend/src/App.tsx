@@ -12,7 +12,7 @@ const App = () => {
         <Uploader />
         <VideoPlayer />
       </div>
-      <div className="flex w-full justify-between">
+      <div className="flex flex-col w-full justify-between">
         <VideoMetrics />
         <History />
       </div>

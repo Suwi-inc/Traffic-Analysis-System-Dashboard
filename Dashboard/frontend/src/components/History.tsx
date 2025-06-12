@@ -2,10 +2,6 @@ import { useAtomValue } from "jotai";
 import { isStreamingAtom } from "../atoms";
 import { useEffect, useState } from "react";
 import { HistoryResult } from "../models";
-import relativeTime from "dayjs/plugin/relativeTime";
-import dayjs from "dayjs";
-
-dayjs.extend(relativeTime);
 
 const History = () => {
   const isStreaming = useAtomValue(isStreamingAtom);
@@ -20,77 +16,97 @@ const History = () => {
 
   return (
     <div className="w-full mx-auto flex flex-col items-center p-8 gap-4">
-      <h3 className="mb-2.5 pb-2.5 border-b-1 border-b-black border-solid text-center text-2xl font-semibold">
+      <h3 className="mb-2.5 pb-2.5 border-b border-black text-center text-2xl font-semibold">
         History
       </h3>
-      {!history && <>No history yet, please upload a video and start stream </>}
+      {!history && <>No history yet, please upload a video and start stream</>}
       {history && (
-        <table className="table-auto w-full border-collapse border border-gray-400 border-spacing-2">
+        <table className="table-auto w-full border-collapse border border-gray-400 shadow-2xl text-sm text-center">
           <thead>
             <tr>
-              <th className="border border-gray-300">Video Name</th>
-              <th className="border border-gray-300">Time</th>
-              <th className="border border-gray-300">Lane Occupancy</th>
-              <th className="border border-gray-300">Vehicle Distribution</th>
+              <th rowSpan={2} className="border border-gray-300">
+                Video Name
+              </th>
+              <th rowSpan={2} className="border border-gray-300">
+                Time
+              </th>
+              <th colSpan={2} className="border border-gray-300">
+                Lane Occupancy
+              </th>
+              <th colSpan={6} className="border border-gray-300">
+                Vehicle Distribution
+              </th>
+            </tr>
+            <tr>
+              <th className="border border-gray-300">Lane</th>
+              <th className="border border-gray-300">Occupancy Rate</th>
+              <th className="border border-gray-300">Lane</th>
+              <th className="border border-gray-300">Car</th>
+              <th className="border border-gray-300">Truck</th>
+              <th className="border border-gray-300">Motorcycle</th>
+              <th className="border border-gray-300">Bus</th>
+              <th className="border border-gray-300">Other</th>
             </tr>
           </thead>
           <tbody>
             {history.metrics
-              .sort((x, y) => y.metric_id - x.metric_id)
-              .map((x) => (
-                <tr key={x.metric_id} className="text-center">
-                  <td className="border border-gray-300">
-                    {x.video_name.split(".mp4")[0]}
-                  </td>
-                  <td className="border border-gray-300">
-                    {dayjs(x.time).fromNow()}
-                  </td>
-                  <td className="border border-gray-300">
-                    <table className="table-fixed">
-                      <thead>
-                        <tr>
-                          <th>Lane Name</th>
-                          <th>Occupancy Rate</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {x.lane_occupancy.map((y) => (
-                          <tr key={y.occupancy_rate} className="text-center">
-                            <td>{y.lane_name}</td>
-                            <td>{y.occupancy_rate}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </td>
-                  <td className="border border-gray-300">
-                    <table className="table-fixed">
-                      <thead>
-                        <tr>
-                          <th>Lane Name</th>
-                          <th>Car</th>
-                          <th>Truck</th>
-                          <th>Motorcycle</th>
-                          <th>Bus</th>
-                          <th>Other</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {x.vehicle_distribution.map((y) => (
-                          <tr key={y.car} className="text-center">
-                            <td>{y.lane_name}</td>
-                            <td>{y.car}</td>
-                            <td>{y.truck}</td>
-                            <td>{y.motorcycle}</td>
-                            <td>{y.bus}</td>
-                            <td>{y.other}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              ))}
+              .sort((a, b) => b.metric_id - a.metric_id)
+              .map((metric) => {
+                const maxRows = Math.max(
+                  metric.lane_occupancy.length,
+                  metric.vehicle_distribution.length
+                );
+
+                return [...Array(maxRows)].map((_, rowIndex) => {
+                  const occ = metric.lane_occupancy[rowIndex];
+                  const veh = metric.vehicle_distribution[rowIndex];
+
+                  return (
+                    <tr key={`${metric.metric_id}-${rowIndex}`}>
+                      {rowIndex === 0 && (
+                        <>
+                          <td
+                            rowSpan={maxRows}
+                            className="border border-gray-300"
+                          >
+                            {metric.video_name}
+                          </td>
+                          <td
+                            rowSpan={maxRows}
+                            className="border border-gray-300"
+                          >
+                            {new Date(metric.time).toLocaleString()}
+                          </td>
+                        </>
+                      )}
+                      <td className="border border-gray-300">
+                        {occ?.lane_name || ""}
+                      </td>
+                      <td className="border border-gray-300">
+                        {occ?.occupancy_rate ?? ""}
+                      </td>
+                      <td className="border border-gray-300">
+                        {veh?.lane_name || ""}
+                      </td>
+                      <td className="border border-gray-300">
+                        {veh?.car ?? ""}
+                      </td>
+                      <td className="border border-gray-300">
+                        {veh?.truck ?? ""}
+                      </td>
+                      <td className="border border-gray-300">
+                        {veh?.motorcycle ?? ""}
+                      </td>
+                      <td className="border border-gray-300">
+                        {veh?.bus ?? ""}
+                      </td>
+                      <td className="border border-gray-300">
+                        {veh?.other ?? ""}
+                      </td>
+                    </tr>
+                  );
+                });
+              })}
           </tbody>
         </table>
       )}
