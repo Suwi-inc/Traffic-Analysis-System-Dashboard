@@ -1,21 +1,22 @@
-import { useRef, useEffect, useState } from "react";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useRef, useEffect } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   messageAtom,
   isUploadedAtom,
   resultAtom,
+  isStreamingAtom,
 } from "../atoms";
 import { Result } from "../models";
 
 const VideoPlayer = () => {
-  const [isStreaming, setIsStreaming] = useState(false);
+  const [isStreaming, setIsStreaming] = useAtom(isStreamingAtom);
   const isUploaded = useAtomValue(isUploadedAtom);
   const setMessage = useSetAtom(messageAtom);
   const setResult = useSetAtom(resultAtom);
   const videoRef = useRef<HTMLImageElement | null>(null);
   const ws = useRef<WebSocket | null>(null);
 
-  const WS_BASE_URL = import.meta.env.VITE_APP_WS_BASE_URL;
+  const url = import.meta.env.VITE_APP_WS_BASE_URL;
 
   useEffect(() => {
     return () => {
@@ -34,7 +35,7 @@ const VideoPlayer = () => {
     setIsStreaming(true);
     setMessage("Starting stream...");
 
-    ws.current = new WebSocket(`${WS_BASE_URL}/ws`);
+    ws.current = new WebSocket(`${url}/ws`);
 
     ws.current.onopen = () => {
       console.log("WebSocket connected");
@@ -63,7 +64,7 @@ const VideoPlayer = () => {
       console.log("WebSocket disconnected");
       setIsStreaming(false);
     };
-    if (setIsStreaming) setIsStreaming(true);
+    if (!isStreaming) setIsStreaming(true);
   };
 
   const stopStream = () => {
@@ -72,7 +73,7 @@ const VideoPlayer = () => {
     }
     setIsStreaming(false);
     setMessage("Stream stopped");
-    if (setIsStreaming) setIsStreaming(false);
+    if (isStreaming) setIsStreaming(false);
   };
 
   return (
@@ -96,7 +97,9 @@ const VideoPlayer = () => {
               style={{ maxWidth: "100%", maxHeight: "500px" }}
             />
           ) : (
-            <p className="text-center">Stream will appear here when started</p>
+            <p className="text-center font-bold italic">
+              Stream will appear here when started
+            </p>
           )}
         </div>
       </div>
