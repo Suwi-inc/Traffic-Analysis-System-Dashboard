@@ -19,7 +19,7 @@ const TypeDistribution = ({ type_distribution }: Props) => {
             <div className="flex flex-col gap-2">
               {Object.entries(x[1]).map((y) => (
                 <div key={y[0]} className="flex gap-2 text-xl">
-                  <div className="font-semibold text-black">{y[0]}:</div>
+                  <div className="font-semibold text-black">{y[0] === "null" ? "Other" : y[0]}:</div>
                   <div className="text-black font-semibold">{y[1]}</div>
                 </div>
               ))}

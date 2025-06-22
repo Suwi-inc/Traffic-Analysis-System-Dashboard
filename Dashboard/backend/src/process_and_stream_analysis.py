@@ -19,8 +19,8 @@ from .metrics import (
     vehicle_type_distribution,
 )
 
-MODEL_PATH = "./models/yolo11m.pt"
-PREDEFINED_LANES = "predefined_lanes.json"
+MODEL_PATH = "./models/yolo11s.pt"
+PREDEFINED_LANES = "predefined_lanes_sd.json"
 
 
 def load_lane_polygons(base_dir):
@@ -80,17 +80,42 @@ def draw_lane_counters(frame, lanes, vehicle_counts):
     for lane in lanes:
         lane_id = lane["id"]
         label = lane.get("label", lane_id)
-        direction = lane.get("direction", "Undefined")
+        direction = lane.get("direction", "-")
         count = vehicle_counts.get(lane_id, 0)
+
+        text = f"{label} ({direction}): {count}"
+        font = cv2.FONT_HERSHEY_DUPLEX
+        font_scale = 1
+        thickness = 1
+
+        # Get text size
+        (text_width, text_height), baseline = cv2.getTextSize(
+            text, font, font_scale, thickness
+        )
+
+        # Set text position
+        x, y = 10, y_offset
+
+        # Draw black rectangle background
+        cv2.rectangle(
+            frame,
+            (x - 5, y - text_height - 5),
+            (x + text_width + 5, y + baseline + 5),
+            (0, 0, 0),
+            thickness=cv2.FILLED,
+        )
+
+        # Draw text
         cv2.putText(
             frame,
-            f"{label} ({direction}): {count}",
-            (10, y_offset),
-            cv2.FONT_HERSHEY_DUPLEX,
-            1,
+            text,
+            (x, y),
+            font,
+            font_scale,
             (50, 255, 0),
-            1,
+            thickness,
         )
+
         y_offset += 30
     return frame
 
@@ -116,7 +141,7 @@ async def process_and_stream_analysis(
         return
 
     lanes, lane_polygons = load_lane_polygons(base_dir)
-    detector = YoloDetector(model_path=MODEL_PATH, confidence=0.1)
+    detector = YoloDetector(model_path=MODEL_PATH, confidence=0.7)
     tracker = Tracker()
 
     vehicle_entries = {lane_id: set() for lane_id in lane_polygons.keys()}
@@ -126,7 +151,9 @@ async def process_and_stream_analysis(
     lane_occupancy_frames = defaultdict(int)
     total_frames = 0
     final_metrics = None
-
+    total_fps = 0
+    average_fps = 0
+    average_fps_history = []
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -161,7 +188,10 @@ async def process_and_stream_analysis(
         counts_per_hour = vehicle_counts_over_time(vehicle_timestamps, interval="hour")
         end_time = time.perf_counter()
         fps = 1 / (end_time - start_time)
+        total_fps += fps
 
+        average_fps = total_fps / total_frames
+        average_fps_history.append((total_frames, average_fps))
         final_metrics = payload = {
             "frame": frame,
             "type_distribution": type_distribution,
@@ -184,3 +214,5 @@ async def process_and_stream_analysis(
             )
     await websocket.close()
     cap.release()
+    with open("average_fps_data.json", "w") as f:
+        json.dump(average_fps_history, f)

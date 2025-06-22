@@ -23,7 +23,7 @@ def store_metrics_data(
                 occupancy_rate=occ_rate,
             )
         )
-
+    print(type_distribution)
     for lane_id, dist in type_distribution.items():
         db.add(
             VehicleDistribution(
@@ -33,7 +33,7 @@ def store_metrics_data(
                 truck=dist.get("truck", 0),
                 motorcycle=dist.get("motorcycle", 0),
                 bus=dist.get("bus", 0),
-                other=dist.get("other", 0),
+                other=dist.get(None, 0),
             )
         )
 
