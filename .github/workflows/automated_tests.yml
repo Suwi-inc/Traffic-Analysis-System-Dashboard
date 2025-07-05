@@ -52,8 +52,6 @@ jobs:
                 overwrite: ''
                 working-directory: ./Dashboard/backend/
         
-    
-       
       - name: Commit coverage badge
         uses: EndBug/add-and-commit@v9
         with:
