@@ -1,5 +1,3 @@
-![coverage](./Dashboard/backend/coverage.svg)
-
 # Traffic Analysis System
 
 ## Key Features

@@ -40,21 +40,4 @@ jobs:
           coverage run --source=./src,. -m pytest
           coverage report -m --fail-under=70 -i
 
-      - name: Generate coverage XML
-        working-directory: ./Dashboard/backend/
-        run: coverage xml -i
-
-      - name: Create coverage badge
-      - uses: tj-actions/coverage-badge-py@v2
-        id: coverage-badge-py
-        with:
-                output: ''
-                overwrite: ''
-                working-directory: ./Dashboard/backend/
-        
-      - name: Commit coverage badge
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: "./Dashboard/backend/coverage.svg"
-          message: "chore: update coverage badge"
 
