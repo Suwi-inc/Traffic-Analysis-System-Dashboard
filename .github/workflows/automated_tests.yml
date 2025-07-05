@@ -6,13 +6,14 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        python-version: [ 3.11]
+        python-version: [3.11]
     env:
       DATABASE_URL: ${{ secrets.TEST_DB }}
 
@@ -32,10 +33,18 @@ jobs:
           pip install -r requirements.txt
           pip install pytest coverage
 
-      - name: Run tests
-        working-directory: ./Dashboard/backend/
-        run: pytest
-
       - name: Run coverage and enforce threshold
         working-directory: ./Dashboard/backend/
-        run: coverage run --source=./src,. -m pytest  && coverage report -m --fail-under=70 -i 
+        run: coverage run --source=./src,. -m pytest && coverage report -m --fail-under=70 -i
+
+      - name: Generate coverage badge
+        uses: tj-actions/coverage-badge-py@v2
+        with:
+          output: ./Dashboard/backend/coverage.svg
+          working-directory: ./Dashboard/backend/
+
+      - name: Commit coverage badge
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update coverage badge
+          file_pattern: ./Dashboard/backend/coverage.svg
