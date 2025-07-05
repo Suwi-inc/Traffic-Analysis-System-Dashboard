@@ -21,14 +21,13 @@ def mock_lanes_file(tmp_path):
             {"id": "2", "points": [[110, 0], [210, 0], [210, 100], [110, 100]]},
         ]
     }
-    file_path = tmp_path / "predefined_lanes.json"
+    file_path = tmp_path / "predefined_lanes_sd.json"
     with open(file_path, "w") as f:
         json.dump(data, f)
     return str(tmp_path)
 
 
 def test_load_lane_polygons(mock_lanes_file):
-
     lanes, lane_polygons = load_lane_polygons(mock_lanes_file)
     assert len(lanes) == 2
     assert isinstance(lane_polygons["1"], np.ndarray)
