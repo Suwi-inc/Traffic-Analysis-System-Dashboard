@@ -14,6 +14,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.11]
+
     env:
       DATABASE_URL: ${{ secrets.TEST_DB }}
 
@@ -35,16 +36,23 @@ jobs:
 
       - name: Run coverage and enforce threshold
         working-directory: ./Dashboard/backend/
-        run: coverage run --source=./src,. -m pytest && coverage report -m --fail-under=70 -i
+        run: |
+          coverage run --source=./src,. -m pytest
+          coverage report -m --fail-under=70 -i
 
-      - name: Generate coverage badge
+      - name: Generate coverage XML
+        working-directory: ./Dashboard/backend/
+        run: coverage xml -i
+
+      - name: Create coverage badge
         uses: tj-actions/coverage-badge-py@v2
         with:
-          output: ./Dashboard/backend/coverage.svg
-          working-directory: ./Dashboard/backend/
+          coverage-file: ./Dashboard/backend/coverage.xml
+          badge-path: ./Dashboard/backend/coverage.svg
 
       - name: Commit coverage badge
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: EndBug/add-and-commit@v9
         with:
-          commit_message: Update coverage badge
-          file_pattern: ./Dashboard/backend/coverage.svg
+          add: "./Dashboard/backend/coverage.svg"
+          message: "chore: update coverage badge"
+
