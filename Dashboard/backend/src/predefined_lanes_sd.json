@@ -1,0 +1,50 @@
+{
+    "lanes": [
+        {
+            "id": "lane_1",
+            "name": "left lane",
+            "direction": "South-North",
+            "points": [
+                [
+                    141,
+                    527
+                ],
+                [
+                    271,
+                    443
+                ],
+                [
+                    562,
+                    471
+                ],
+                [
+                    532,
+                    574
+                ]
+            ]
+        },
+        {
+            "id": "lane_2",
+            "name": "right lane",
+            "direction": "North-South",
+            "points": [
+                [
+                    747,
+                    574
+                ],
+                [
+                    715,
+                    472
+                ],
+                [
+                    999,
+                    450
+                ],
+                [
+                    1141,
+                    537
+                ]
+            ]
+        }
+    ]
+}

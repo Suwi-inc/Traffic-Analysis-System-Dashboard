@@ -52,3 +52,18 @@ export default tseslint.config({
   },
 })
 ```
+
+## Installation Guide 
+### Install dependencies
+```
+npm install
+# or
+yarn install
+```
+### Running the Development Server
+```
+npm run dev
+# or
+yarn dev
+
+```
